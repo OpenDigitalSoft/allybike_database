@@ -2,7 +2,7 @@ name: Build and Deploy to Production
 
 on:
   push:
-    branches: [ "dev" ]
+    branches: [ "main" ]
 jobs:
   deploy:
     runs-on: ubuntu-22.04
@@ -40,6 +40,7 @@ jobs:
         script: |
           cd /home/sysadmin/migrations
           sudo ./migrate.sh status
+          sudo ./migrate.sh up
       
           
       
