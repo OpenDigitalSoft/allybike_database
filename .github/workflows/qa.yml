@@ -26,7 +26,7 @@ jobs:
           username: ${{ secrets.REMOTE_USER_ROOT }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.REMOTE_PORT }}
-          source: "migrations/*"
+          source: "migrations"
           target: "/home/dev/migrations"
     - name: Ejecutar migraciones de base de datos
       uses: appleboy/ssh-action@master
