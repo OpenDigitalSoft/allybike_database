@@ -1,0 +1,29 @@
+name: Build and Deploy to Production
+
+on:
+  push:
+    branches: [ "main" ]
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Check out the repository
+      uses: actions/checkout@v3
+    - name: Ejecutar migraciones de base de datos
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.REMOTE_HOST_PROD }}
+        username: ${{ secrets.REMOTE_USER_ROOT_PROD}}
+        key: ${{ secrets.SSH_PRIVATE_KEY_PROD }}
+        port: ${{ secrets.REMOTE_PORT_PROD }}
+        script: |
+          cd /root/production
+          ls
+          docker-compose pull app
+          docker stop node_app
+          docker rm node_app
+          docker-compose up -d
+          docker image prune -a --force
+          doctl registry garbage-collection start --include-untagged-manifests  -f  allybike 
+          
+      

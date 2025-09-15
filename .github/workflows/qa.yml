@@ -1,0 +1,34 @@
+name: Build and Deploy to Production
+
+on:
+  push:
+    branches: [ "qa" ]
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Check out the repository
+      uses: actions/checkout@v3
+    
+    - name: Subir carpeta migrations al servidor
+      uses: appleboy/scp-action@master
+      with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER_ROOT }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.REMOTE_PORT }}
+          source: "migrations/*"
+          target: "/home/dev/migrations"
+    - name: Ejecutar migraciones de base de datos
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.REMOTE_HOST }}
+        username: ${{ secrets.REMOTE_USER_ROOT}}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.REMOTE_PORT }}
+        script: |
+          cd /home/dev/migrations
+          ./migration.sh status
+          ./migration.sh up
+          
+      
