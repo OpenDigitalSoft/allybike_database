@@ -9,7 +9,16 @@ jobs:
     steps:
     - name: Check out the repository
       uses: actions/checkout@v3
-    
+    - name: Borrar migraciones anteriores
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.REMOTE_HOST }}
+        username: ${{ secrets.REMOTE_USER_ROOT }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.REMOTE_PORT}}
+        script: |
+          rm -rf /home/dev/migrations
+          mkdir -p /home/dev/migrations
     - name: Subir carpeta migrations al servidor
       uses: appleboy/scp-action@master
       with:
