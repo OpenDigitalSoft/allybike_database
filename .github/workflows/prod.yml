@@ -29,7 +29,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY_PROD }}
           port: ${{ secrets.REMOTE_PORT_PROD }}
           source: "db/migrations/*"
-          target: "/home/sysadmin/migrations/db"
+          target: "/home/sysadmin/migrations"
     - name: Ejecutar migraciones de base de datos
       uses: appleboy/ssh-action@master
       with:
