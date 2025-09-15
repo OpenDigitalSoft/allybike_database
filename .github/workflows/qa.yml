@@ -9,6 +9,8 @@ jobs:
     steps:
     - name: Check out the repository
       uses: actions/checkout@v3
+    - name: Listar contenido del repo
+      run: ls -R
     - name: Borrar migraciones anteriores
       uses: appleboy/ssh-action@master
       with:
