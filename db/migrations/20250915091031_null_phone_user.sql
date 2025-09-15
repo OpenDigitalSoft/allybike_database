@@ -1,5 +1,5 @@
 -- +goose Up
-ALTER TABLE user ALTER COLUMN phone DROP NOT NULL;
+ALTER TABLE public.user ALTER COLUMN phone DROP NOT NULL;
 
 -- +goose Down
-ALTER TABLE user ALTER COLUMN phone SET NOT NULL;
+ALTER TABLE public.user ALTER COLUMN phone SET NOT NULL;
