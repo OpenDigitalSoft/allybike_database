@@ -2,13 +2,34 @@ name: Build and Deploy to Production
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "dev" ]
 jobs:
   deploy:
     runs-on: ubuntu-22.04
     steps:
     - name: Check out the repository
       uses: actions/checkout@v3
+    - name: Listar contenido del repo
+      run: ls -R
+    - name: Borrar migraciones anteriores
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.REMOTE_HOST_PROD }}
+        username: ${{ secrets.REMOTE_USER_ROOT_PROD }}
+        key: ${{ secrets.SSH_PRIVATE_KEY_PROD }}
+        port: ${{ secrets.REMOTE_PORT_PROD}}
+        script: |
+          rm -rf /home/sysadmin/migrations/db
+          mkdir -p /home/sysadmin/migrations/db
+    - name: Subir carpeta migrations al servidor
+      uses: appleboy/scp-action@master
+      with:
+          host: ${{ secrets.REMOTE_HOST_PROD }}
+          username: ${{ secrets.REMOTE_USER_ROOT_PROD }}
+          key: ${{ secrets.SSH_PRIVATE_KEY_PROD }}
+          port: ${{ secrets.REMOTE_PORT_PROD }}
+          source: "db/migrations/*"
+          target: "/home/sysadmin/migrations/db"
     - name: Ejecutar migraciones de base de datos
       uses: appleboy/ssh-action@master
       with:
@@ -17,13 +38,8 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY_PROD }}
         port: ${{ secrets.REMOTE_PORT_PROD }}
         script: |
-          cd /root/production
-          ls
-          docker-compose pull app
-          docker stop node_app
-          docker rm node_app
-          docker-compose up -d
-          docker image prune -a --force
-          doctl registry garbage-collection start --include-untagged-manifests  -f  allybike 
+          cd /home/sysadmin/migrations
+          sudo ./migrate.sh status
+      
           
       
